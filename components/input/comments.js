@@ -17,6 +17,8 @@ function Comments(props) {
     // send data to API
   }
 
+
+
   return (
     <section className={classes.comments}>
       <button onClick={toggleCommentsHandler}>
