@@ -1,8 +1,9 @@
 function handler(req, res) {
     const eventId = req.query.eventId;
-
+    
     if (req.method === 'POST') {
-        const { email, name, text } = req.body;
+        const { email, name, text } = JSON.parse(req.body);
+
 
         if (
           !email.includes("@") ||
@@ -28,7 +29,13 @@ function handler(req, res) {
     }
 
     if (req.method === 'GET') {
+        console.log('worked');
+        const dummyList = [
+          { id: 'c1', name: "pranto", text: "A first comment!" },
+          { id: 'c2', name: "Mollick", text: "A second comment!" },
+        ];
 
+        res.status(200).json({ comments: dummyList });
     }
 }
 
