@@ -5,7 +5,7 @@ async function handler(req, res) {
     
     const client = await MongoClient.connect('mongodb://localhost:27017');
     const db = client.db('events');
-    
+    const collection = db.collection('comments');
 
     if (req.method === 'POST') {
         const { email, name, text } = JSON.parse(req.body);
@@ -28,7 +28,6 @@ async function handler(req, res) {
             eventId
         };
         
-        const collection = db.collection('comments');
         const result = await collection.insertOne({
             ...newComment
         })
@@ -37,13 +36,9 @@ async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-        console.log('worked');
-        const dummyList = [
-          { id: 'c1', name: "pranto", text: "A first comment!" },
-          { id: 'c2', name: "Mollick", text: "A second comment!" },
-        ];
-
-        res.status(200).json({ comments: dummyList });
+        const documents = await collection.find().sort({_id: -1}).toArray();
+        console.log(documents);
+        res.status(200).json({ comments: documents });
     }
     client.close();
 }
