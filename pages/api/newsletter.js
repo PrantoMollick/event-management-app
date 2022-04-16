@@ -1,4 +1,4 @@
-import { excuteQuery } from '../../helpers/db';
+import { MongoClient } from 'mongodb';
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -6,23 +6,14 @@ async function handler(req, res) {
 
     if (!userEmail || !userEmail.includes("@")) {
       res.status(422).json({ message: "Invalid email address." });
-      return;
+      return; 
     }
 
-    console.log(userEmail);
-
-    try {
-      // "INSERT INTO customers (name, address) VALUES ('Company Inc', 'Highway 37') ('"+userEmail+"')""
-      let sql = `INSERT INTO newsletter (email) VALUES(?)`;
-      const result = await excuteQuery(sql, [userEmail]);
-      console.log( "ttt",result );
-
-    } catch (error) {
-      console.log(error);
-      res.status(403).json({ error: "Error occured while creating news letter"})
-    }
-
-
+    const client = await MongoClient.connect('mongodb://localhost:27017/')
+    const db = client.db('events')
+    const collection = db.collection('newsletter');
+    await collection.insertOne({ email: userEmail });
+    client.close();
     console.log(userEmail);
     res.status(201).json({ message: "Signed up!" });
   }
