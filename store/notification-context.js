@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 const NotificationContext = createContext({
   notification: null,
@@ -7,21 +7,37 @@ const NotificationContext = createContext({
 });
 
 export function NotificationContextProvider(props) {
-    const [activeNotification, setActiveNotification] = useState();
+  const [activeNotification, setActiveNotification] = useState();
 
-    function showNotificationHandler(notificationData) {
-        setActiveNotification(notificationData)
-    }
+  useEffect(() => {
+    if (
+      activeNotification &&
+      (activeNotification.status === "success" ||
+        activeNotification.status === "error")
+    ) {
+        const timer = setTimeout(() => {
+            setActiveNotification(null)
+        }, 2000);
 
-    function hideNotificationHandler() {
-        setActiveNotification(null);
+        return () => {
+            clearTimeout(timer);
+        }
     }
+  }, [activeNotification]);
 
-    const context = {
-        notification: activeNotification, 
-        showNotification: showNotificationHandler,
-        hideNotification: hideNotificationHandler,
-    }
+  function showNotificationHandler(notificationData) {
+    setActiveNotification(notificationData);
+  }
+
+  function hideNotificationHandler() {
+    setActiveNotification(null);
+  }
+
+  const context = {
+    notification: activeNotification,
+    showNotification: showNotificationHandler,
+    hideNotification: hideNotificationHandler,
+  };
 
   return (
     <NotificationContext.Provider value={context}>
